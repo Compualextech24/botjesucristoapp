@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hablando con el Maestro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://js.puter.com/v2/"></script>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', serif; }
+        
+        #loader, #celestial-wait { 
+            position: fixed; 
+            inset: 0; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            background: radial-gradient(circle, #1a1a2e 0%, #000 100%); 
+            color: white; 
+            z-index: 100; 
+            text-align: center; 
+        }
+
+        #celestial-wait { display: none; background: rgba(0,0,0,0.85); z-index: 110; }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(14, 165, 233, 0.1);
+            border-top: 4px solid #7dd3fc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            filter: drop-shadow(0 0 15px #0ea5e9);
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #celestial-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #0ea5e9, #fff, #0ea5e9);
+            box-shadow: 0 0 15px #0ea5e9;
+            z-index: 60;
+            transition: width 0.4s ease, opacity 0.3s;
+            opacity: 0;
+        }
+
+        #video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background: #000; }
+        
+        video { 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            transition: opacity 0.4s ease;
+        }
+        
+        .glass-input { 
+            background: rgba(3, 105, 161, 0.25) !important; 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(125, 211, 252, 0.2); 
+            border-radius: 28px; 
+            position: relative; 
+            overflow: hidden; 
+            min-height: 50px;
+        }
+
+        #main-title {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1rem; 
+            font-weight: 900; 
+            letter-spacing: 0.5px; 
+            text-shadow: 0 0 15px rgba(125, 211, 252, 0.9);
+            z-index: 50;
+            display: none;
+            width: 95%; 
+            text-align: center;
+            text-transform: uppercase;
+        }
+        
+        #chat-ui { 
+            position: absolute; 
+            bottom: 30px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 96%; 
+            max-width: 900px; 
+            display: none; 
+            z-index: 50; 
+        }
+        
+        #history { max-height: 40vh; overflow-y: auto; margin-bottom: 12px; padding: 10px; scroll-behavior: smooth; }
+        #history::-webkit-scrollbar { width: 0px; }
+
+        .btn-start { 
+            background: #fff; 
+            color: #0369a1; 
+            padding: 18px 45px; 
+            border-radius: 50px; 
+            font-weight: 900; 
+            cursor: pointer; 
+            box-shadow: 0 0 40px rgba(14, 165, 233, 0.3); 
+            transition: all 0.4s;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .msg-bubble { 
+            display: inline-block; 
+            padding: 14px 22px; 
+            border-radius: 22px; 
+            margin: 6px 0; 
+            max-width: 92%; 
+            font-size: 0.95rem; 
+            line-height: 1.4; 
+            font-weight: 700; 
+        }
+
+        .msg-user { background: rgba(14, 165, 233, 0.35); color: white; border: 1px solid rgba(125, 211, 252, 0.2); }
+        .msg-christ { background: rgba(255, 255, 255, 0.65); color: #0369a1; }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="mb-6">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="#7dd3fc" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 12px #0ea5e9);">
+                <path d="M12 2L15 8.5L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L9 8.5L12 2Z"/>
+            </svg>
+        </div>
+        <p id="load-status" class="text-xl px-6 mb-8 font-light italic">Preparando el encuentro divino...</p>
+        <div id="startBtn" class="btn-start" style="display: none;">ENTRAR EN COMUNIÓN</div>
+    </div>
+
+    <div id="celestial-wait">
+        <div class="spinner mb-6"></div>
+        <p class="text-xl px-6 font-light italic text-blue-200">Esperando señal del cielo...</p>
+    </div>
+
+    <h1 id="main-title">✨ "HABLANDO CON EL MAESTRO" ✨</h1>
+
+    <div id="video-container">
+        <video id="video-idle" loop muted playsinline style="opacity: 1; z-index: 10;">
+            <source src="https://compualextech24.github.io/Hobbieyoscio/Parpadeo.mp4" type="video/mp4">
+        </video>
+        <video id="video-talking" loop muted playsinline style="opacity: 0; z-index: 5;">
+            <source src="https://compualextech24.github.io/Hobbieyoscio/habla.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div id="chat-ui">
+        <div id="history" class="flex flex-col"></div>
+        <div class="glass-input p-3 flex gap-3 items-center">
+            <div id="celestial-progress"></div>
+            <input type="text" id="userInput" class="flex-1 bg-transparent border-none text-white outline-none font-bold placeholder:text-blue-100/40 text-sm pl-4" placeholder="Abre tu corazón...">
+            <button id="sendBtn" class="w-14 h-10 rounded-2xl flex items-center justify-center bg-sky-500/20 border border-sky-300/30 text-white">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const groqKey = "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";
+        
+        const vIdle = document.getElementById('video-idle');
+        const vTalk = document.getElementById('video-talking');
+        const startBtn = document.getElementById('startBtn');
+        const celestialWait = document.getElementById('celestial-wait');
+        const mainTitle = document.getElementById('main-title');
+        const chatUi = document.getElementById('chat-ui');
+        const sendBtn = document.getElementById('sendBtn');
+        const progressBar = document.getElementById('celestial-progress');
+
+        let isProcessing = false;
+
+        window.onload = () => {
+            setTimeout(() => {
+                startBtn.style.display = "block";
+                document.getElementById('load-status').innerText = "Conexión posible por Alextech";
+            }, 1000);
+        };
+
+        async function start() {
+            console.log("🚀 Iniciando aplicación...");
+            document.getElementById('loader').style.display = "none";
+            celestialWait.style.display = "flex";
+            
+            if (typeof puter === 'undefined') {
+                console.error("❌ Puter no está disponible");
+                alert("Error: Puter no se cargó correctamente. Recarga la página.");
+                return;
+            }
+            
+            vIdle.play().catch(e => console.error("Error video idle:", e));
+            vTalk.load(); 
+
+            const greet = "Hola hijo mío, esta conexión fue posible gracias a Alex tecno, posiblemente porque buscas respuesta, de ser así: no os dudes en preguntar.";
+            await speak(greet, true);
+        }
+
+        function toggleTalk(isTalking) {
+            if(isTalking) {
+                vTalk.style.opacity = "1";
+                vTalk.style.zIndex = "20";
+                vIdle.style.opacity = "0";
+                vTalk.play().catch(() => {});
+            } else {
+                vTalk.style.opacity = "0";
+                vTalk.style.zIndex = "5";
+                vIdle.style.opacity = "1";
+                vTalk.pause();
+                vTalk.currentTime = 0;
+            }
+        }
+
+        async function speak(text, isInitial = false) {
+            if (!isInitial) {
+                celestialWait.style.display = "flex";
+            }
+
+            try {
+                if (typeof puter === 'undefined') {
+                    throw new Error("Puter no está cargado");
+                }
+
+                // Implementación solicitada: Voz de Andrés con motor Neural en Español MX
+                const audio = await puter.ai.txt2speech(text, {
+                    voice: 'Andres',
+                    engine: 'neural',
+                    language: 'es-MX'
+                });
+                
+                celestialWait.style.display = "none";
+                
+                if (isInitial) {
+                    mainTitle.style.display = "block";
+                    chatUi.style.display = "block";
+                }
+
+                toggleTalk(true);
+                
+                audio.onended = () => {
+                    toggleTalk(false);
+                    isProcessing = false;
+                };
+
+                audio.onerror = () => {
+                    toggleTalk(false);
+                    isProcessing = false;
+                };
+
+                await audio.play();
+
+            } catch (e) {
+                console.error("❌ Error en Audio:", e);
+                celestialWait.style.display = "none";
+                if (isInitial) {
+                    mainTitle.style.display = "block";
+                    chatUi.style.display = "block";
+                }
+                isProcessing = false;
+            }
+        }
+
+        async function send() {
+            if(isProcessing) return;
+            const input = document.getElementById('userInput');
+            const q = input.value.trim();
+            if(!q) return;
+            
+            isProcessing = true;
+            addMsg(q, true);
+            input.value = "";
+            
+            progressBar.style.opacity = "1";
+            progressBar.style.width = "30%";
+
+            try {
+                const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile",
+                        messages: [
+                            { role: "system", content: "Eres Jesucristo. Responde con lenguaje bíblico solemne. Sé MUY breve (máximo 2 frases). Di 'Hijo mío' al empezar." },
+                            { role: "user", content: q }
+                        ],
+                        max_tokens: 100,
+                        temperature: 0.5
+                    })
+                });
+                const data = await resp.json();
+                const txt = data.choices[0].message.content;
+                
+                progressBar.style.width = "100%";
+                setTimeout(() => { progressBar.style.opacity = "0"; }, 500);
+
+                addMsg(txt, false);
+                await speak(txt);
+            } catch (e) { 
+                console.error("❌ Error Groq:", e);
+                isProcessing = false;
+                progressBar.style.opacity = "0";
+            }
+        }
+
+        function addMsg(t, u) {
+            const history = document.getElementById('history');
+            const d = document.createElement('div');
+            d.className = "w-full flex " + (u ? 'justify-end' : 'justify-start');
+            d.innerHTML = `<span class="msg-bubble ${u ? 'msg-user' : 'msg-christ'} shadow-xl">${t}</span>`;
+            history.appendChild(d);
+            history.scrollTop = history.scrollHeight;
+        }
+
+        startBtn.onclick = start;
+        sendBtn.onclick = send;
+        document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') send(); };
+    </script>
+</body>
+</html>
