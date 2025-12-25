@@ -150,12 +150,12 @@
     <h1 id="main-title">✨ "HABLANDO CON EL MAESTRO" ✨</h1>
 
     <div id="video-container">
-        <video id="video-idle" loop muted playsinline style="opacity: 1; z-index: 10;">
-            <source src="https://compualextech24.github.io/botjesucristoapp/Parpadeo.mp4" type="video/mp4">
-        </video>
-        <video id="video-talking" loop muted playsinline style="opacity: 0; z-index: 5;">
-            <source src="https://compualextech24.github.io/botjesucristoapp/habla.mp4" type="video/mp4">
-        </video>
+  <video id="video-idle" loop muted playsinline preload="auto" style="opacity: 1; z-index: 10;">
+    <source src="https://compualextech24.github.io/botjesucristoapp/Parpadeo.mp4" type="video/mp4">
+</video>
+<video id="video-talking" loop muted playsinline preload="auto" style="opacity: 0; z-index: 5;">
+    <source src="https://compualextech24.github.io/botjesucristoapp/habla.mp4" type="video/mp4">
+</video>
     </div>
 
     <div id="chat-ui">
@@ -170,7 +170,12 @@
     </div>
 
     <script>
-        const groqKey = "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";
+      
+let messageCount = 0;
+const MAX_MESSAGES = 10; // Límite de mensajes por sesión
+let sessionStartTime = Date.now();
+const SESSION_DURATION = 10 * 60 * 1000; // 10 minutos en milisegundos
+ let videosLoaded = false;
         
         const vIdle = document.getElementById('video-idle');
         const vTalk = document.getElementById('video-talking');
@@ -183,24 +188,43 @@
 
         let isProcessing = false;
 
-        window.onload = () => {
-            setTimeout(() => {
-                startBtn.style.display = "block";
-                document.getElementById('load-status').innerText = "Conexión posible por Alextech";
-            }, 1000);
-        };
 
-        async function start() {
-            console.log("🚀 Iniciando aplicación...");
-            document.getElementById('loader').style.display = "none";
-            celestialWait.style.display = "flex";
+        
+        window.onload = () => {
+    vIdle.load();
+    vTalk.load();
+    
+    Promise.all([
+        new Promise(resolve => {
+            if (vIdle.readyState >= 3) resolve();
+            else vIdle.addEventListener('canplaythrough', resolve, { once: true });
+        }),
+        new Promise(resolve => {
+            if (vTalk.readyState >= 3) resolve();
+            else vTalk.addEventListener('canplaythrough', resolve, { once: true });
+        })
+    ]).then(() => {
+        console.log("✅ Videos precargados");
+        videosLoaded = true;
+        startBtn.style.display = "block";
+        document.getElementById('load-status').innerText = "Conexión posible por Alextech";
+    });
+};
+
+            async function start() {
+    if (!videosLoaded) return; 
+    console.log("🚀 Iniciando aplicación...");
             
             if (typeof puter === 'undefined') {
                 console.error("❌ Puter no está disponible");
                 alert("Error: Puter no se cargó correctamente. Recarga la página.");
                 return;
             }
-            
+
+                // --- ESTO ES LO QUE DEBES AGREGAR ---
+    document.getElementById('loader').style.display = "none"; 
+    // ---
+                
             vIdle.play().catch(e => console.error("Error video idle:", e));
             vTalk.load(); 
 
@@ -272,60 +296,110 @@
             }
         }
 
-        async function send() {
-            if(isProcessing) return;
-            const input = document.getElementById('userInput');
-            const q = input.value.trim();
-            if(!q) return;
-            
-            isProcessing = true;
-            addMsg(q, true);
-            input.value = "";
-            
-            progressBar.style.opacity = "1";
-            progressBar.style.width = "30%";
+  async function send() {
+    if(isProcessing) return;
+    
+    // 1. Verificar límites de mensajes
+    if (messageCount >= MAX_MESSAGES) {
+        addMsg("Has alcanzado el límite de 10 mensajes. Recarga la página para continuar.", false);
+        return;
+    }
+    
+    // 2. Verificar tiempo de sesión
+    const elapsedTime = Date.now() - sessionStartTime;
+    if (elapsedTime >= SESSION_DURATION) {
+        addMsg("Tu sesión de 10 minutos ha terminado. Recarga la página para continuar.", false);
+        return;
+    }
+    
+    // 3. Obtener y validar el texto
+    const input = document.getElementById('userInput');
+    const q = input.value.trim();
+    if(!q) return;
+    
+    if (q.length > 200) {
+        addMsg("Por favor, haz preguntas más breves (máximo 200 caracteres).", false);
+        return;
+    }
+    
+    // 4. Iniciar procesamiento
+    isProcessing = true;
+    messageCount++;
+    
+    // Mostrar advertencia de mensajes restantes en consola
+    const remaining = MAX_MESSAGES - messageCount;
+    if (remaining <= 3) {
+        console.log(`⚠️ Te quedan ${remaining} mensajes`);
+    }
+    
+    addMsg(q, true);
+    input.value = "";
+    
+    progressBar.style.opacity = "1";
+    progressBar.style.width = "30%";
 
-            try {
-                const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        model: "llama-3.3-70b-versatile",
-                        messages: [
-                            { role: "system", content: "Eres Jesucristo. Responde con lenguaje bíblico solemne. Sé MUY breve (máximo 2 frases). Di 'Hijo mío' al empezar." },
-                            { role: "user", content: q }
-                        ],
-                        max_tokens: 100,
-                        temperature: 0.5
-                    })
-                });
-                const data = await resp.json();
-                const txt = data.choices[0].message.content;
+    try {
+        // Usamos puter.ai.chat para que la llave de Groq no sea necesaria en el código
+        const resp = await puter.ai.chat(q, {
+            model: "llama-3.3-70b-versatile",
+            system_message: "Eres Jesucristo. Responde con lenguaje bíblico solemne. Sé MUY breve (máximo 2 frases). Di 'Hijo mío' al empezar.",
+            max_tokens: 60,
+            temperature: 0.5
+        });
+
+        const txt = resp.message.content;
                 
+        progressBar.style.width = "100%";
+        setTimeout(() => { progressBar.style.opacity = "0"; }, 500);
+
+        addMsg(txt, false);
+        await speak(txt);
+    } catch (e) { 
+        console.error("❌ Error:", e);
+        isProcessing = false;
+        progressBar.style.opacity = "0";
+    }
+}
                 progressBar.style.width = "100%";
                 setTimeout(() => { progressBar.style.opacity = "0"; }, 500);
 
-                addMsg(txt, false);
-                await speak(txt);
-            } catch (e) { 
-                console.error("❌ Error Groq:", e);
-                isProcessing = false;
-                progressBar.style.opacity = "0";
-            }
-        }
+             addMsg(txt, false);
+        await speak(txt);
+    } catch (e) { 
+        console.error("❌ Error:", e);
+        isProcessing = false;
+        progressBar.style.opacity = "0";
+    }
+} // <--- Esta llave cierra la función send()
+        
+                progressBar.style.width = "100%"; // <--- ESTO ESTÁ AFUERA Y DA ERROR
+                setTimeout(() => { progressBar.style.opacity = "0"; }, 500);
 
-        function addMsg(t, u) {
-            const history = document.getElementById('history');
-            const d = document.createElement('div');
-            d.className = "w-full flex " + (u ? 'justify-end' : 'justify-start');
-            d.innerHTML = `<span class="msg-bubble ${u ? 'msg-user' : 'msg-christ'} shadow-xl">${t}</span>`;
-            history.appendChild(d);
-            history.scrollTop = history.scrollHeight;
-        }
+           addMsg(txt, false);
+        await speak(txt);
+    } catch (e) { 
+        console.error("❌ Error:", e);
+        isProcessing = false;
+        progressBar.style.opacity = "0";
+    }
+}
 
-        startBtn.onclick = start;
-        sendBtn.onclick = send;
-        document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') send(); };
-    </script>
+function addMsg(t, u) {
+    const history = document.getElementById('history');
+    const d = document.createElement('div');
+    d.className = "w-full flex " + (u ? 'justify-end' : 'justify-start');
+    d.innerHTML = `<span class="msg-bubble ${u ? 'msg-user' : 'msg-christ'} shadow-xl">${t}</span>`;
+    history.appendChild(d);
+    history.scrollTop = history.scrollHeight;
+}
+
+startBtn.onclick = start;
+sendBtn.onclick = send;
+// ... (funciones anteriores)
+document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') send(); };
+</script>
+</body>
+</html>
+</script>
 </body>
 </html>
