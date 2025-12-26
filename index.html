@@ -51,15 +51,18 @@
 
         #video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background: #000; }
         
+
         video { 
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            transition: opacity 0.4s ease;
-        }
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    transition: opacity 0.3s ease-in-out; /* Esto hace el cambio fluido */
+}
+
+        
         
         .glass-input { 
             background: rgba(3, 105, 161, 0.25) !important; 
@@ -150,7 +153,7 @@
     <h1 id="main-title">✨ "HABLANDO CON EL MAESTRO" ✨</h1>
 
     <div id="video-container">
-  <video id="video-idle" loop muted playsinline preload="auto" style="opacity: 1; z-index: 10;">
+ <video id="video-idle" loop muted playsinline preload="auto" style="opacity: 1; z-index: 5;">
     <source src="https://compualextech24.github.io/botjesucristoapp/Parpadeo.mp4" type="video/mp4">
 </video>
 <video id="video-talking" loop muted playsinline preload="auto" style="opacity: 0; z-index: 5;">
@@ -232,21 +235,20 @@ const SESSION_DURATION = 10 * 60 * 1000; // 10 minutos en milisegundos
             await speak(greet, true);
         }
 
-        function toggleTalk(isTalking) {
-            if(isTalking) {
-                vTalk.style.opacity = "1";
-                vTalk.style.zIndex = "20";
-                vIdle.style.opacity = "0";
-                vTalk.play().catch(() => {});
-            } else {
-                vTalk.style.opacity = "0";
-                vTalk.style.zIndex = "5";
-                vIdle.style.opacity = "1";
-                vTalk.pause();
-                vTalk.currentTime = 0;
-            }
-        }
-
+      function toggleTalk(isTalking) {
+    if(isTalking) {
+        // Mostramos el video de habla suavemente
+        vTalk.style.opacity = "1";
+        vIdle.style.opacity = "0";
+        vTalk.play().catch(() => {});
+    } else {
+        // Volvemos al video de espera instantáneamente
+        vTalk.style.opacity = "0";
+        vIdle.style.opacity = "1";
+        // No pausamos el vTalk bruscamente para evitar el frame negro
+        setTimeout(() => { if(!isProcessing) vTalk.pause(); }, 400);
+    }
+}
         async function speak(text, isInitial = false) {
             if (!isInitial) {
                 celestialWait.style.display = "flex";
@@ -347,35 +349,12 @@ const SESSION_DURATION = 10 * 60 * 1000; // 10 minutos en milisegundos
             temperature: 0.5
         });
 
-        const txt = resp.message.content;
+       const txt = resp.message.content;
                 
         progressBar.style.width = "100%";
         setTimeout(() => { progressBar.style.opacity = "0"; }, 500);
 
         addMsg(txt, false);
-        await speak(txt);
-    } catch (e) { 
-        console.error("❌ Error:", e);
-        isProcessing = false;
-        progressBar.style.opacity = "0";
-    }
-}
-                progressBar.style.width = "100%";
-                setTimeout(() => { progressBar.style.opacity = "0"; }, 500);
-
-             addMsg(txt, false);
-        await speak(txt);
-    } catch (e) { 
-        console.error("❌ Error:", e);
-        isProcessing = false;
-        progressBar.style.opacity = "0";
-    }
-} // <--- Esta llave cierra la función send()
-        
-                progressBar.style.width = "100%"; // <--- ESTO ESTÁ AFUERA Y DA ERROR
-                setTimeout(() => { progressBar.style.opacity = "0"; }, 500);
-
-           addMsg(txt, false);
         await speak(txt);
     } catch (e) { 
         console.error("❌ Error:", e);
@@ -395,11 +374,7 @@ function addMsg(t, u) {
 
 startBtn.onclick = start;
 sendBtn.onclick = send;
-// ... (funciones anteriores)
 document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') send(); };
-</script>
-</body>
-</html>
 </script>
 </body>
 </html>
