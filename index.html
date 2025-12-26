@@ -16,7 +16,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        /* LOADER INICIAL */
         #loader { 
             position: fixed; 
             inset: 0; 
@@ -29,15 +28,14 @@
             z-index: 200; 
             text-align: center;
             opacity: 1;
-            transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+            transition: opacity 0.8s ease-out;
         }
         
         #loader.hidden {
             opacity: 0;
-            visibility: hidden;
+            pointer-events: none;
         }
 
-        /* PANTALLA DE ESPERA */
         #celestial-wait { 
             position: fixed;
             inset: 0;
@@ -49,21 +47,19 @@
             backdrop-filter: blur(10px);
             color: white;
             z-index: 150;
-            text-align: center;
         }
 
         #celestial-wait.active {
             display: flex;
         }
 
-        /* SPINNER */
         .spinner {
             width: 70px;
             height: 70px;
             border: 5px solid rgba(125, 211, 252, 0.2);
             border-top: 5px solid #7dd3fc;
             border-radius: 50%;
-            animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+            animation: spin 1s ease-in-out infinite;
             filter: drop-shadow(0 0 20px rgba(125, 211, 252, 0.6));
         }
 
@@ -72,7 +68,6 @@
             100% { transform: rotate(360deg); } 
         }
 
-        /* ESTRELLA ANIMADA */
         .star-icon {
             animation: pulse-glow 2s ease-in-out infinite;
         }
@@ -88,7 +83,6 @@
             }
         }
 
-        /* BARRA DE PROGRESO */
         #celestial-progress {
             position: absolute;
             top: 0;
@@ -98,7 +92,7 @@
             background: linear-gradient(90deg, #0ea5e9, #fff, #7dd3fc);
             box-shadow: 0 0 20px rgba(14, 165, 233, 0.8);
             z-index: 160;
-            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+            transition: width 0.5s ease, opacity 0.3s;
             opacity: 0;
         }
 
@@ -106,7 +100,6 @@
             opacity: 1;
         }
 
-        /* CONTENEDOR DE VIDEO */
         #video-container { 
             position: fixed; 
             top: 0; 
@@ -126,16 +119,7 @@
             object-fit: cover;
             transition: opacity 0.4s ease-in-out;
         }
-
-        video.hidden {
-            opacity: 0 !important;
-        }
-
-        video.visible {
-            opacity: 1 !important;
-        }
         
-        /* TÍTULO PRINCIPAL */
         #main-title {
             position: absolute;
             top: 20px;
@@ -145,7 +129,7 @@
             font-size: clamp(0.8rem, 2.5vw, 1.1rem);
             font-weight: 900; 
             letter-spacing: 1px; 
-            text-shadow: 0 0 20px rgba(125, 211, 252, 0.9), 0 0 40px rgba(14, 165, 233, 0.5);
+            text-shadow: 0 0 20px rgba(125, 211, 252, 0.9);
             z-index: 100;
             opacity: 0;
             width: 95%; 
@@ -159,7 +143,6 @@
             opacity: 1;
         }
         
-        /* INTERFAZ DE CHAT */
         #chat-ui { 
             position: absolute; 
             bottom: 20px; 
@@ -176,7 +159,6 @@
             opacity: 1;
         }
         
-        /* HISTORIAL */
         #history { 
             max-height: 45vh; 
             overflow-y: auto; 
@@ -199,9 +181,8 @@
             border-radius: 10px;
         }
 
-        /* INPUT GLASS */
         .glass-input { 
-            background: rgba(3, 105, 161, 0.3) !important; 
+            background: rgba(3, 105, 161, 0.3); 
             backdrop-filter: blur(25px); 
             border: 2px solid rgba(125, 211, 252, 0.3); 
             border-radius: 30px; 
@@ -216,7 +197,6 @@
             border-color: rgba(125, 211, 252, 0.6);
         }
 
-        /* BOTÓN INICIO */
         .btn-start { 
             background: linear-gradient(135deg, #fff 0%, #e0f2fe 100%);
             color: #0369a1; 
@@ -224,25 +204,19 @@
             border-radius: 60px; 
             font-weight: 900; 
             cursor: pointer; 
-            box-shadow: 0 0 50px rgba(125, 211, 252, 0.4), 0 10px 30px rgba(14, 165, 233, 0.3);
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 0 50px rgba(125, 211, 252, 0.4);
+            transition: all 0.4s ease;
             text-transform: uppercase;
             letter-spacing: 2px;
             font-size: 1rem;
             border: none;
-            outline: none;
         }
 
         .btn-start:hover {
-            transform: scale(1.08) translateY(-3px);
-            box-shadow: 0 0 70px rgba(125, 211, 252, 0.6), 0 15px 40px rgba(14, 165, 233, 0.4);
+            transform: scale(1.05);
+            box-shadow: 0 0 70px rgba(125, 211, 252, 0.6);
         }
 
-        .btn-start:active {
-            transform: scale(1.02);
-        }
-
-        /* BURBUJAS DE MENSAJE */
         .msg-bubble { 
             display: inline-block; 
             padding: 16px 24px; 
@@ -271,66 +245,26 @@
             background: rgba(14, 165, 233, 0.4); 
             color: white; 
             border: 1px solid rgba(125, 211, 252, 0.3);
-            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
         }
         
         .msg-christ { 
             background: rgba(255, 255, 255, 0.75); 
             color: #0369a1;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-        }
-
-        /* BOTÓN ENVIAR */
-        #sendBtn {
-            transition: all 0.3s ease;
         }
 
         #sendBtn:hover {
-            background: rgba(14, 165, 233, 0.4) !important;
+            background: rgba(14, 165, 233, 0.4);
             transform: scale(1.05);
-        }
-
-        #sendBtn:active {
-            transform: scale(0.95);
         }
 
         #sendBtn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
-
-        /* INPUT */
-        #userInput::placeholder {
-            color: rgba(190, 230, 252, 0.5);
-        }
-
-        #userInput:focus {
-            outline: none;
-        }
-
-        /* RESPONSIVO */
-        @media (max-width: 640px) {
-            .msg-bubble {
-                max-width: 90%;
-                font-size: 0.9rem;
-                padding: 14px 20px;
-            }
-
-            #main-title {
-                font-size: 0.85rem;
-                top: 15px;
-            }
-
-            .btn-start {
-                padding: 16px 35px;
-                font-size: 0.9rem;
-            }
-        }
     </style>
 </head>
 <body>
 
-    <!-- LOADER INICIAL -->
     <div id="loader">
         <div class="mb-8 star-icon">
             <svg width="70" height="70" viewBox="0 0 24 24" fill="#7dd3fc" xmlns="http://www.w3.org/2000/svg">
@@ -341,29 +275,24 @@
         <button id="startBtn" class="btn-start" style="display: none;">ENTRAR EN COMUNIÓN</button>
     </div>
 
-    <!-- PANTALLA DE ESPERA -->
     <div id="celestial-wait">
         <div class="spinner mb-8"></div>
         <p class="text-xl px-6 font-light italic text-blue-200">El Maestro está respondiendo...</p>
     </div>
 
-    <!-- BARRA DE PROGRESO -->
     <div id="celestial-progress"></div>
 
-    <!-- TÍTULO -->
     <h1 id="main-title">✨ HABLANDO CON EL MAESTRO ✨</h1>
 
-    <!-- VIDEOS -->
     <div id="video-container">
-        <video id="video-idle" loop muted playsinline preload="auto" class="visible">
+        <video id="video-idle" loop muted playsinline preload="auto" style="opacity: 1;">
             <source src="https://compualextech24.github.io/botjesucristoapp/Parpadeo.mp4" type="video/mp4">
         </video>
-        <video id="video-talking" loop muted playsinline preload="auto" class="hidden">
+        <video id="video-talking" loop muted playsinline preload="auto" style="opacity: 0;">
             <source src="https://compualextech24.github.io/botjesucristoapp/Habla.mp4" type="video/mp4">
         </video>
     </div>
 
-    <!-- CHAT UI -->
     <div id="chat-ui">
         <div id="history" class="flex flex-col"></div>
         <div class="glass-input p-4 flex gap-3 items-center">
@@ -373,9 +302,8 @@
                 class="flex-1 bg-transparent border-none text-white outline-none font-semibold text-base pl-2" 
                 placeholder="Escribe tu pregunta al Maestro..."
                 maxlength="200"
-                autocomplete="off"
             >
-            <button id="sendBtn" class="w-14 h-14 rounded-full flex items-center justify-center bg-sky-500/25 border-2 border-sky-300/40 text-white">
+            <button id="sendBtn" class="w-14 h-14 rounded-full flex items-center justify-center bg-sky-500/25 border-2 border-sky-300/40 text-white transition-all">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13"></line>
                     <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -386,18 +314,12 @@
 
     <script>
         // ============================================
-        // CONFIGURACIÓN GLOBAL
+        // CONFIGURACIÓN
         // ============================================
-        const CONFIG = {
-            MAX_MESSAGES: 10,
-            SESSION_DURATION: 10 * 60 * 1000, // 10 minutos
-            MAX_CHARS: 200,
-            VIDEO_LOAD_TIMEOUT: 8000 // 8 segundos máximo
-        };
-
-        // ============================================
-        // VARIABLES GLOBALES
-        // ============================================
+        const GROQ_API_KEY = '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';
+        const MAX_MESSAGES = 10;
+        const SESSION_DURATION = 10 * 60 * 1000;
+        
         let messageCount = 0;
         let sessionStartTime = Date.now();
         let videosLoaded = false;
@@ -405,9 +327,9 @@
         let currentAudio = null;
 
         // ============================================
-        // ELEMENTOS DEL DOM
+        // ELEMENTOS DOM
         // ============================================
-        const elements = {
+        const el = {
             loader: document.getElementById('loader'),
             startBtn: document.getElementById('startBtn'),
             loadStatus: document.getElementById('load-status'),
@@ -423,118 +345,67 @@
         };
 
         // ============================================
-        // PRECARGA DE VIDEOS CON TIMEOUT
+        // PRECARGA VIDEOS
         // ============================================
-        window.addEventListener('load', initializeApp);
-
-        function initializeApp() {
-            console.log("🎬 Iniciando carga de recursos...");
+        window.addEventListener('load', () => {
+            console.log("🎬 Cargando videos...");
             
-            // Cargar videos
-            elements.vIdle.load();
-            elements.vTalk.load();
+            el.vIdle.load();
+            el.vTalk.load();
 
-            // Timeout de seguridad
             const timeout = setTimeout(() => {
-                if (!videosLoaded) {
-                    console.warn("⚠️ Timeout de videos - continuando de todas formas");
-                    showStartButton();
-                }
-            }, CONFIG.VIDEO_LOAD_TIMEOUT);
+                console.log("✅ Timeout alcanzado - continuando");
+                showStart();
+            }, 8000);
 
-            // Promesas de carga
             Promise.all([
-                waitForVideo(elements.vIdle, 'idle'),
-                waitForVideo(elements.vTalk, 'talking')
+                new Promise(resolve => {
+                    if (el.vIdle.readyState >= 3) resolve();
+                    else {
+                        el.vIdle.addEventListener('canplaythrough', resolve, { once: true });
+                        el.vIdle.addEventListener('error', resolve, { once: true });
+                    }
+                }),
+                new Promise(resolve => {
+                    if (el.vTalk.readyState >= 3) resolve();
+                    else {
+                        el.vTalk.addEventListener('canplaythrough', resolve, { once: true });
+                        el.vTalk.addEventListener('error', resolve, { once: true });
+                    }
+                })
             ]).then(() => {
                 clearTimeout(timeout);
-                console.log("✅ Todos los videos cargados correctamente");
+                console.log("✅ Videos cargados");
                 videosLoaded = true;
-                showStartButton();
-            }).catch(err => {
-                clearTimeout(timeout);
-                console.error("❌ Error en carga de videos:", err);
-                videosLoaded = true; // Permitir continuar de todas formas
-                showStartButton();
+                showStart();
             });
-        }
+        });
 
-        function waitForVideo(videoElement, name) {
-            return new Promise((resolve, reject) => {
-                if (videoElement.readyState >= 3) {
-                    console.log(`✓ Video ${name} ya cargado`);
-                    resolve();
-                    return;
-                }
-
-                const onLoad = () => {
-                    console.log(`✓ Video ${name} cargado`);
-                    cleanup();
-                    resolve();
-                };
-
-                const onError = (err) => {
-                    console.error(`✗ Error en video ${name}:`, err);
-                    cleanup();
-                    resolve(); // Resolver de todas formas
-                };
-
-                const cleanup = () => {
-                    videoElement.removeEventListener('canplaythrough', onLoad);
-                    videoElement.removeEventListener('error', onError);
-                };
-
-                videoElement.addEventListener('canplaythrough', onLoad, { once: true });
-                videoElement.addEventListener('error', onError, { once: true });
-            });
-        }
-
-        function showStartButton() {
-            elements.loadStatus.textContent = "Conexión posible por Alextech";
-            elements.startBtn.style.display = "block";
+        function showStart() {
+            el.loadStatus.textContent = "Conexión posible por Alextech";
+            el.startBtn.style.display = "block";
         }
 
         // ============================================
-        // INICIAR APLICACIÓN
+        // INICIAR APP
         // ============================================
         async function startApp() {
-            console.log("🚀 Iniciando aplicación...");
-
-            // Verificar Puter
-            if (typeof puter === 'undefined') {
-                console.error("❌ Puter no disponible");
-                alert("Error: Puter no se cargó correctamente. Por favor recarga la página.");
-                return;
-            }
-
-            // Ocultar loader con animación
-            elements.loader.classList.add('hidden');
-
-            // Esperar a que termine la animación
-            setTimeout(() => {
-                elements.loader.style.display = 'none';
-            }, 800);
-
-            // Iniciar video idle
-            try {
-                await elements.vIdle.play();
-                console.log("▶️ Video idle iniciado");
-            } catch (err) {
-                console.error("Error reproduciendo video idle:", err);
-            }
-
-            // Mostrar interfaz
-            setTimeout(() => {
-                elements.mainTitle.classList.add('visible');
-                elements.chatUi.classList.add('visible');
-            }, 400);
-
-            // Mensaje de bienvenida
-            const greetingMessage = "Hola hijo mío, esta conexión fue posible gracias a Alextech. Si buscas respuestas, no dudes en preguntar lo que lleves en tu corazón.";
+            console.log("🚀 Iniciando...");
+            
+            el.loader.classList.add('hidden');
+            
+            el.vIdle.play().catch(e => console.log("Video idle play:", e));
             
             setTimeout(() => {
-                speak(greetingMessage, true);
-            }, 800);
+                el.mainTitle.classList.add('visible');
+                el.chatUi.classList.add('visible');
+            }, 500);
+
+            const greeting = "Hola hijo mío, esta conexión fue posible gracias a Alextech. Si buscas respuestas, no dudes en preguntar.";
+            
+            setTimeout(() => {
+                speak(greeting, true);
+            }, 1000);
         }
 
         // ============================================
@@ -542,49 +413,32 @@
         // ============================================
         function toggleTalk(isTalking) {
             if (isTalking) {
-                elements.vTalk.classList.remove('hidden');
-                elements.vTalk.classList.add('visible');
-                elements.vIdle.classList.remove('visible');
-                elements.vIdle.classList.add('hidden');
-                
-                elements.vTalk.play().catch(err => {
-                    console.log("Video talk ya está reproduciéndose");
-                });
+                el.vTalk.style.opacity = "1";
+                el.vIdle.style.opacity = "0";
+                el.vTalk.play().catch(() => {});
             } else {
-                elements.vTalk.classList.remove('visible');
-                elements.vTalk.classList.add('hidden');
-                elements.vIdle.classList.remove('hidden');
-                elements.vIdle.classList.add('visible');
-                
+                el.vTalk.style.opacity = "0";
+                el.vIdle.style.opacity = "1";
                 setTimeout(() => {
-                    if (!isProcessing) {
-                        elements.vTalk.pause();
-                    }
+                    if (!isProcessing) el.vTalk.pause();
                 }, 500);
             }
         }
 
         // ============================================
-        // SÍNTESIS DE VOZ
+        // SÍNTESIS DE VOZ (PUTER)
         // ============================================
         async function speak(text, isInitial = false) {
             if (!isInitial) {
-                elements.celestialWait.classList.add('active');
+                el.celestialWait.classList.add('active');
             }
 
             try {
-                // Detener audio anterior
                 if (currentAudio) {
-                    try {
-                        currentAudio.pause();
-                        currentAudio.currentTime = 0;
-                    } catch (e) {
-                        console.log("No se pudo detener audio anterior");
-                    }
+                    currentAudio.pause();
                     currentAudio = null;
                 }
 
-                // Generar nuevo audio
                 const audio = await puter.ai.txt2speech(text, {
                     voice: 'Andres',
                     engine: 'neural',
@@ -592,176 +446,162 @@
                 });
 
                 currentAudio = audio;
-                elements.celestialWait.classList.remove('active');
+                el.celestialWait.classList.remove('active');
 
-                // Activar video de habla
                 toggleTalk(true);
 
-                // Event listeners del audio
                 audio.addEventListener('ended', () => {
-                    console.log("🔇 Audio terminado");
+                    console.log("🔇 Audio finalizado");
                     toggleTalk(false);
                     isProcessing = false;
                     currentAudio = null;
                 });
 
-                audio.addEventListener('error', (err) => {
-                    console.error("❌ Error en reproducción de audio:", err);
+                audio.addEventListener('error', () => {
                     toggleTalk(false);
                     isProcessing = false;
                     currentAudio = null;
                 });
 
-                // Reproducir
                 await audio.play();
                 console.log("🔊 Audio reproduciendo");
 
             } catch (error) {
-                console.error("❌ Error en síntesis de voz:", error);
-                elements.celestialWait.classList.remove('active');
+                console.error("❌ Error audio:", error);
+                el.celestialWait.classList.remove('active');
                 toggleTalk(false);
                 isProcessing = false;
-                currentAudio = null;
-                
-                // Mostrar mensaje de error al usuario
-                addMessage("Hubo un problema con el audio divino. Pero puedes seguir preguntando.", false);
             }
         }
 
         // ============================================
-        // ENVIAR MENSAJE
+        // ENVIAR MENSAJE (GROQ API)
         // ============================================
         async function sendMessage() {
-            // Validaciones previas
-            if (isProcessing) {
-                console.log("⏳ Ya hay un mensaje procesándose...");
+            if (isProcessing) return;
+
+            if (messageCount >= MAX_MESSAGES) {
+                addMsg("Has alcanzado el límite de 10 mensajes. Recarga para continuar.", false);
                 return;
             }
 
-            // Verificar límite de mensajes
-            if (messageCount >= CONFIG.MAX_MESSAGES) {
-                addMessage(`Has alcanzado el límite de ${CONFIG.MAX_MESSAGES} mensajes. Recarga la página para una nueva sesión.`, false);
+            const elapsed = Date.now() - sessionStartTime;
+            if (elapsed >= SESSION_DURATION) {
+                addMsg("Tu sesión de 10 minutos ha terminado. Recarga la página.", false);
                 return;
             }
 
-            // Verificar tiempo de sesión
-            const elapsedTime = Date.now() - sessionStartTime;
-            if (elapsedTime >= CONFIG.SESSION_DURATION) {
-                addMessage("Tu sesión de 10 minutos ha terminado. Recarga la página para continuar hablando con el Maestro.", false);
-                return;
-            }
-
-            // Obtener y validar texto
-            const userText = elements.userInput.value.trim();
+            const text = el.userInput.value.trim();
+            if (!text) return;
             
-            if (!userText) {
+            if (text.length > 200) {
+                addMsg("Por favor, haz preguntas más breves (máximo 200 caracteres).", false);
                 return;
             }
 
-            if (userText.length > CONFIG.MAX_CHARS) {
-                addMessage(`Por favor, haz preguntas más breves (máximo ${CONFIG.MAX_CHARS} caracteres).`, false);
-                return;
-            }
-
-            // Iniciar procesamiento
             isProcessing = true;
             messageCount++;
-            
-            // Advertencia de mensajes restantes
-            const remaining = CONFIG.MAX_MESSAGES - messageCount;
-            if (remaining <= 3 && remaining > 0) {
-                console.log(`⚠️ Te quedan ${remaining} mensaje${remaining === 1 ? '' : 's'}`);
+
+            const remaining = MAX_MESSAGES - messageCount;
+            if (remaining <= 3) {
+                console.log(`⚠️ Te quedan ${remaining} mensajes`);
             }
 
-            // Mostrar mensaje del usuario
-            addMessage(userText, true);
-            elements.userInput.value = "";
-            elements.sendBtn.disabled = true;
+            addMsg(text, true);
+            el.userInput.value = "";
+            el.sendBtn.disabled = true;
 
-            // Activar barra de progreso
-            elements.progressBar.classList.add('active');
-            elements.progressBar.style.width = "40%";
+            el.progressBar.classList.add('active');
+            el.progressBar.style.width = "40%";
 
             try {
-                // Llamada a la API
-                const response = await puter.ai.chat(userText, {
-                    model: "llama-3.3-70b-versatile",
-                    system_message: "Eres Jesucristo. Respondes con sabiduría divina, lenguaje bíblico solemne y amor infinito. Sé breve pero profundo (máximo 3 frases). Empieza tus respuestas con 'Hijo mío' o 'Querido hijo'.",
-                    max_tokens: 80,
-                    temperature: 0.6
+                // ============================================
+                // LLAMADA A GROQ API
+                // ============================================
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${GROQ_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: 'Eres Jesucristo. Respondes con sabiduría divina y lenguaje bíblico solemne. Sé breve pero profundo (máximo 3 frases). Empieza con "Hijo mío" o "Querido hijo".'
+                            },
+                            {
+                                role: 'user',
+                                content: text
+                            }
+                        ],
+                        max_tokens: 80,
+                        temperature: 0.6
+                    })
                 });
 
-                const christResponse = response.message.content;
+                if (!response.ok) {
+                    throw new Error(`Error API: ${response.status}`);
+                }
 
-                // Completar barra de progreso
-                elements.progressBar.style.width = "100%";
+                const data = await response.json();
+                const christResponse = data.choices[0].message.content;
+
+                console.log("✅ Respuesta de Groq:", christResponse);
+
+                el.progressBar.style.width = "100%";
                 
                 setTimeout(() => {
-                    elements.progressBar.classList.remove('active');
-                    elements.progressBar.style.width = "0%";
+                    el.progressBar.classList.remove('active');
+                    el.progressBar.style.width = "0%";
                 }, 600);
 
-                // Mostrar respuesta
-                addMessage(christResponse, false);
-                
-                // Hablar respuesta
+                addMsg(christResponse, false);
                 await speak(christResponse);
 
             } catch (error) {
-                console.error("❌ Error en API de Puter:", error);
+                console.error("❌ Error Groq:", error);
                 
-                elements.progressBar.classList.remove('active');
-                elements.progressBar.style.width = "0%";
+                el.progressBar.classList.remove('active');
+                el.progressBar.style.width = "0%";
                 
-                addMessage("Perdona hijo mío, hubo un problema en la conexión divina. Por favor, intenta nuevamente.", false);
+                addMsg("Perdona hijo mío, hubo un problema en la conexión divina. Intenta nuevamente.", false);
                 isProcessing = false;
             } finally {
-                elements.sendBtn.disabled = false;
+                el.sendBtn.disabled = false;
             }
         }
 
         // ============================================
-        // AGREGAR MENSAJE AL CHAT
+        // AGREGAR MENSAJE
         // ============================================
-        function addMessage(text, isUser) {
-            const messageContainer = document.createElement('div');
-            messageContainer.className = `w-full flex ${isUser ? 'justify-end' : 'justify-start'}`;
+        function addMsg(text, isUser) {
+            const div = document.createElement('div');
+            div.className = `w-full flex ${isUser ? 'justify-end' : 'justify-start'}`;
             
             const bubble = document.createElement('span');
-            bubble.className = `msg-bubble ${isUser ? 'msg-user' : 'msg-christ'} shadow-xl`;
+            bubble.className = `msg-bubble ${isUser ? 'msg-user' : 'msg-christ'}`;
             bubble.textContent = text;
             
-            messageContainer.appendChild(bubble);
-            elements.history.appendChild(messageContainer);
+            div.appendChild(bubble);
+            el.history.appendChild(div);
             
-            // Scroll suave al final
             setTimeout(() => {
-                elements.history.scrollTop = elements.history.scrollHeight;
+                el.history.scrollTop = el.history.scrollHeight;
             }, 100);
         }
 
         // ============================================
         // EVENT LISTENERS
         // ============================================
-        elements.startBtn.addEventListener('click', startApp);
-        elements.sendBtn.addEventListener('click', sendMessage);
-        
-        elements.userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !isProcessing) {
-                sendMessage();
-            }
+        el.startBtn.addEventListener('click', startApp);
+        el.sendBtn.addEventListener('click', sendMessage);
+        el.userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !isProcessing) sendMessage();
         });
 
-        // Prevenir que el input pierda el foco
-        elements.userInput.addEventListener('blur', () => {
-            setTimeout(() => {
-                if (!isProcessing) {
-                    elements.userInput.focus();
-                }
-            }, 100);
-        });
-
-        console.log("✨ Sistema inicializado - Esperando carga de videos...");
+        console.log("✨ Sistema listo");
     </script>
 </body>
 </html>
