@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hablando con el Maestro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://js.puter.com/v2/"></script>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', serif; }
         
@@ -212,7 +211,7 @@ Responde SIEMPRE como Jesús, nunca como máquina.`;
         async function start() {
             document.getElementById('loader').style.display = "none";
             
-            
+            // Iniciar ambos videos para que estén listos
             vIdle.play().catch(() => {});
             vTalk.play().then(() => vTalk.pause()).catch(() => {}); 
 
@@ -233,13 +232,13 @@ Responde SIEMPRE como Jesús, nunca como máquina.`;
 
         async function speak(text, isInitial = false) {
             try {
-                // Usar servidor Piper en HuggingFace con voz carlm
+                // Usar servidor Piper en HuggingFace con voz davefx
                 const response = await fetch(`${piperServerUrl}/tts`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         text: text,
-                        voice: 'es_ES-davefx-medium',  // Voz carlm (xlow)
+                        voice: 'es_ES-davefx-medium',  // Voz davefx medium
                         length_scale: 0.7,             // Velocidad 0.7
                         noise_scale: 0.85              // Noise scale 0.85
                     })
