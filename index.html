@@ -163,8 +163,11 @@
     </div>
 
     <script>
-        // SERVIDOR GEMMA PARA IA
+        // SERVIDOR GEMMA PARA IA (Backup)
         const gemmaServerUrl = "https://alejandrott24-mi-gemma-servidor.hf.space";
+        
+        // GROQ API (Primario - más rápido)
+        const groqKey = "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";
         
         // SERVIDOR PIPER TTS EN HUGGINGFACE
         const piperServerUrl = "https://alejandrott24-piper-tts-server.hf.space";
@@ -209,10 +212,6 @@ Responde SIEMPRE como Jesús, nunca como máquina.`;
         async function start() {
             document.getElementById('loader').style.display = "none";
             
-            if (typeof puter === 'undefined') {
-                alert("Error: Puter no se cargó correctamente.");
-                return;
-            }
             
             vIdle.play().catch(() => {});
             vTalk.play().then(() => vTalk.pause()).catch(() => {}); 
@@ -234,15 +233,15 @@ Responde SIEMPRE como Jesús, nunca como máquina.`;
 
         async function speak(text, isInitial = false) {
             try {
-                // NUEVO: Usar servidor Piper en HuggingFace con voz carlm
+                // Usar servidor Piper en HuggingFace con voz carlm
                 const response = await fetch(`${piperServerUrl}/tts`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         text: text,
-                        voice: 'es_ES-carlfm-x_low',  // Voz carlm (xlow)
-                        length_scale: 0.7,                    // Velocidad 0.7
-                        noise_scale: 0.85               // Noise scale 0.85
+                        voice: 'es_ES-davefx-medium',  // Voz carlm (xlow)
+                        length_scale: 0.7,             // Velocidad 0.7
+                        noise_scale: 0.85              // Noise scale 0.85
                     })
                 });
 
@@ -304,21 +303,47 @@ Responde SIEMPRE como Jesús, nunca como máquina.`;
             progressBar.style.width = "30%";
 
             try {
-                // Construir mensaje con contexto del sistema
-                const fullMessage = `${systemPrompt}
-
-Usuario pregunta: ${q}
-
-Responde SOLO como Jesucristo (máximo 3 oraciones):`;
-
-                const resp = await fetch(`${gemmaServerUrl}/preguntar?mensaje=${encodeURIComponent(fullMessage)}`, {
-                    method: 'GET'
-                });
-                
-                progressBar.style.width = "70%";
-                
-                const data = await resp.json();
-                let txt = data.respuesta;
+                // INTENTO 1: Groq (rápido y gratis)
+                let txt;
+                try {
+                    const groqResp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: 'POST',
+                        headers: { 
+                            'Authorization': `Bearer ${groqKey}`, 
+                            'Content-Type': 'application/json' 
+                        },
+                        body: JSON.stringify({
+                            model: "llama-3.3-70b-versatile",
+                            messages: [
+                                { role: "system", content: systemPrompt },
+                                { role: "user", content: q }
+                            ],
+                            max_tokens: 150,
+                            temperature: 0.7
+                        })
+                    });
+                    
+                    progressBar.style.width = "70%";
+                    
+                    if (groqResp.ok) {
+                        const data = await groqResp.json();
+                        txt = data.choices[0].message.content;
+                    } else {
+                        throw new Error("Groq falló, intentando Gemma...");
+                    }
+                    
+                } catch (groqError) {
+                    // INTENTO 2: Gemma (backup si Groq falla)
+                    console.log("Usando Gemma como respaldo...");
+                    const fullMessage = `${systemPrompt}\n\nUsuario pregunta: ${q}\n\nResponde SOLO como Jesucristo (máximo 3 oraciones):`;
+                    
+                    const gemmaResp = await fetch(`${gemmaServerUrl}/preguntar?mensaje=${encodeURIComponent(fullMessage)}`, {
+                        method: 'GET'
+                    });
+                    
+                    const data = await gemmaResp.json();
+                    txt = data.respuesta;
+                }
                 
                 // Limpiar respuesta
                 txt = txt.replace(/^(Respuesta:|Jesús dice:|Como Jesús:)/i, '').trim();
@@ -343,7 +368,7 @@ Responde SOLO como Jesucristo (máximo 3 oraciones):`;
                 await speak(txt);
                 
             } catch (e) { 
-                console.error("Error con Gemma:", e);
+                console.error("Error con ambas IAs:", e);
                 addMsg("La conexión divina se ha interrumpido. Intenta nuevamente, hijo mío.", false);
                 isProcessing = false;
                 progressBar.style.opacity = "0";
